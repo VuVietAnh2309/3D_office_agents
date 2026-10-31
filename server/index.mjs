@@ -59,7 +59,17 @@ if (process.env.OFFICE_LOG) { const out = fs.createWriteStream(process.env.OFFIC
 const TEN_PHIEN_FILE = path.join(ROOT, 'ten-phien.json');
 let TEN_PHIEN = {};
 try { TEN_PHIEN = JSON.parse(fs.readFileSync(TEN_PHIEN_FILE, 'utf8')); } catch { /* chưa có: dùng tiêu đề tự sinh */ }
-const tenPhien = (s) => (s.cwd && TEN_PHIEN[s.cwd]) || '';
+/**
+ * Tra theo MÃ PHIÊN trước, rồi mới tới thư mục.
+ *
+ * Bản trước chỉ tra theo thư mục, nên hai phiên mở cùng một chỗ đều nhận
+ * chung một tên — nhìn vào không biết ai là ai, mà đó đúng là cảnh hay gặp
+ * nhất: mở thêm một phiên nữa trong cùng dự án.
+ *
+ * Mã phiên đổi mỗi lần bắt đầu hội thoại mới, nên mục theo thư mục vẫn giữ
+ * làm mặc định cho phiên chưa được đặt tên riêng.
+ */
+const tenPhien = (s) => (s.sid && TEN_PHIEN[s.sid]) || (s.cwd && TEN_PHIEN[s.cwd]) || '';
 
 const TEN_DOI_FILE = path.join(ROOT, 'ten-doi.json');
 let TEN_DOI = {};
