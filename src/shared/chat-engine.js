@@ -43,7 +43,7 @@ export function createChatEngine(ctx) {
     const key = STAFF[from] || String(from || '');
     if (key.startsWith('__')) { const name = ctx.staffName(key); return name ? { key, name, staff: true } : null; }
     const m = members().find((x) => x.id === key);
-    return m ? { key, name: m.name } : null;
+    return m ? { key, name: m.name, real: !!m.real } : null;
   }
   const resting = () => members().filter((m) => m.status === 'rest').map((m) => m.id);
   const anyone = (but = []) => { const r = resting().filter((id) => !but.includes(id)); const pool = r.length ? r : members().map((m) => m.id).filter((id) => !but.includes(id)); return pool.length ? pickOne(pool) : null; };
@@ -67,6 +67,23 @@ export function createChatEngine(ctx) {
   function say(from, text, opts = {}) {
     if (!fresh(opts.key) || (!text && opts.sticker == null && !opts.photo && !opts.poll && !opts.remind)) return;
     const p = who(from); if (!p) return;
+    /**
+     * Một phiên Claude Code THẬT chỉ được nói bằng chữ của chính nó — tức câu
+     * do `onDone` đưa sang, gắn `tag: 'claude'`. Mọi lời thoại do văn phòng tự
+     * sinh dưới tên nó đều bị chặn tại đây: lời chào khi mở phiên, câu "nhận
+     * việc" sau mỗi prompt, câu trạng thái soạn sẵn khi bị @, và những mẩu tán
+     * gẫu ngẫu nhiên.
+     *
+     * Vì sao chặn: chúng mang đúng tên và ảnh đại diện của phiên thật, nên
+     * người dùng không có cách nào phân biệt với câu trả lời thật. Đã có lần
+     * một câu "Will do!" tự sinh khiến người dùng ngồi chờ 40 phút một việc
+     * mà Claude chưa hề nghe thấy.
+     *
+     * Chặn ở `say()` chứ không ở từng chỗ gọi: `work()`, phản ứng khi bị @ và
+     * bộ chọn người nói ngẫu nhiên đều đi qua đây, nên không sót đường nào —
+     * kể cả đường thêm vào sau này.
+     */
+    if (p.real && opts.tag !== 'claude') return;
     const now = ctx.now(), wait = opts.now ? 0 : opts.delay ?? rand(400, 1800), typing = opts.now || p.key === 'me' ? 0 : Math.min(2800, 700 + String(text || '').length * 30);
     queue.push({ p, text: String(text || '').slice(0, opts.long ? 4000 : 600), opts, typeAt: now + wait, at: now + wait + typing });
     queue.sort((a, b) => a.at - b.at);
