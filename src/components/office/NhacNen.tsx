@@ -141,9 +141,10 @@ export default function NhacNen() {
           aria-pressed={chay}
           title={chay ? 'Tắt nhạc' : 'Bật nhạc'}
           onClick={() => {
-            const m = !chay;
-            datChay(m);
-            if (m) datMo(true);
+            // Cố ý KHÔNG tự mở bảng: bảng rộng 300px, mở ra là che mất một
+            // mảng sân khấu. Bình thường chỉ cần một nút nhỏ; ai muốn xem tên
+            // bài hay đổi nhạc thì bấm mũi tên bên cạnh.
+            datChay(!chay);
           }}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">

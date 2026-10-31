@@ -1,8 +1,11 @@
 /* Nhạc nền — nút nổi ở góc dưới bên trái sân khấu, bảng mở lên trên. */
 .nhac {
   position: fixed;
-  left: 16px;
-  bottom: 16px;
+  /* Mép trái sân khấu (dải phiên rộng 300px), và cao hơn thanh camera ở đáy.
+     Để ở góc dưới bên trái thì nút đè lên một dòng phiên, bảng thì che cả
+     danh sách — mất thông tin để lấy chỗ cho nhạc là đổi hỏng. */
+  left: 316px;
+  bottom: 76px;
   z-index: 60;
   display: flex;
   flex-direction: column;
@@ -116,5 +119,7 @@
 
 /* Màn hẹp: rail bên trái thu lại, nút vẫn ở nguyên góc nhưng bảng co theo. */
 @media (max-width: 720px) {
+  /* Màn hẹp: dải phiên thu lại, nút về sát mép trái. */
+  .nhac { left: 16px; }
   .nhac-bang { width: min(300px, calc(100vw - 48px)); }
 }
