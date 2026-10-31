@@ -48,6 +48,19 @@ if (process.env.OFFICE_LOG) { const out = fs.createWriteStream(process.env.OFFIC
  * cạnh thư mục này; sửa xong khởi động lại máy chủ là xong, không phải build
  * lại, vì đây là mã chạy thẳng bằng node chứ không qua Next.
  */
+/**
+ * Tên hiển thị của một PHIÊN, tra theo thư mục nó được khởi động.
+ *
+ * Mặc định là tiêu đề do Claude Code tự đặt (`aiTitle` trong bản ghi) hoặc tên
+ * thư mục. Đổi được bằng cách tự đặt lại tên đoạn chat trong Claude Code, nhưng
+ * tra theo THƯ MỤC thì bền hơn: mở đoạn chat mới ở cùng chỗ vẫn ra đúng tên,
+ * khỏi phải đặt lại mỗi lần.
+ */
+const TEN_PHIEN_FILE = path.join(ROOT, 'ten-phien.json');
+let TEN_PHIEN = {};
+try { TEN_PHIEN = JSON.parse(fs.readFileSync(TEN_PHIEN_FILE, 'utf8')); } catch { /* chưa có: dùng tiêu đề tự sinh */ }
+const tenPhien = (s) => (s.cwd && TEN_PHIEN[s.cwd]) || '';
+
 const TEN_DOI_FILE = path.join(ROOT, 'ten-doi.json');
 let TEN_DOI = {};
 try { TEN_DOI = JSON.parse(fs.readFileSync(TEN_DOI_FILE, 'utf8')); } catch { /* chưa có: giữ nguyên tên thư mục */ }
@@ -292,7 +305,7 @@ const tenDoiCua = (s) => {
   return tenDoi(r ? r.name : path.basename(s.cwd || '')) || '';
 };
 
-const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: s.title || '', proj: tenDoiCua(s), dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
+const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: tenPhien(s) || s.title || '', proj: tenDoiCua(s), dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
   taskStart: s.taskStart, counts: s.counts, subs: Object.values(s.subs).map(pubSub), doneSubs: (s.doneSubs || []).map(pubSub), last: s.last, acct: acctOf(s),
   entry: s.entry || '', moved: s.parked ? { to: acctShown(s.parked.to), at: s.parked.at } : null,
   lastAt: s.lastEventAt || s.createdAt, doneAt: s.doneAt || 0, todos: s.todos || [], lastReply: s.lastReply || '', origin: s.origin || '',
