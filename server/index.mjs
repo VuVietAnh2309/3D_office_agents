@@ -281,7 +281,18 @@ function freeDesk() {
   return -1;
 }
 const pubSub = (x) => ({ id: x.id, type: x.type, desc: x.desc || '', last: x.last || null, startedAt: x.startedAt, endedAt: x.endedAt || null, steps: x.steps || 0 });
-const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: s.title || '', dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
+/**
+ * Nhãn đội của một phiên. Kho git thì lấy tên kho; thư mục thường thì lấy tên
+ * thư mục — rồi cả hai đi qua `ten-doi.json`. Nhờ vậy phiên chat ngồi ở thư mục
+ * cha (không phải kho git) cũng đặt tên được, thay vì phải bịa một đối tượng
+ * `git` giả chỉ để có chỗ nhét cái tên.
+ */
+const tenDoiCua = (s) => {
+  const r = s.cwd && git.repoOf(s.cwd);
+  return tenDoi(r ? r.name : path.basename(s.cwd || '')) || '';
+};
+
+const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: s.title || '', proj: tenDoiCua(s), dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
   taskStart: s.taskStart, counts: s.counts, subs: Object.values(s.subs).map(pubSub), doneSubs: (s.doneSubs || []).map(pubSub), last: s.last, acct: acctOf(s),
   entry: s.entry || '', moved: s.parked ? { to: acctShown(s.parked.to), at: s.parked.at } : null,
   lastAt: s.lastEventAt || s.createdAt, doneAt: s.doneAt || 0, todos: s.todos || [], lastReply: s.lastReply || '', origin: s.origin || '',
