@@ -124,7 +124,11 @@ export default function NhacNen() {
         title={mo ? 'Thu gọn bảng nhạc' : 'Mở bảng nhạc'}
         onClick={() => datMo(!mo)}
       >
-        <span aria-hidden="true">{mo ? '\u25B4' : '\u25BE'}</span>
+        {/* Mũi tên vẽ bằng SVG, không dùng ký tự ▴/▾: hai ký tự đó nhỏ xíu và
+            mờ trên hàng nút này, người dùng không nhận ra là bấm được. */}
+        <svg viewBox="0 0 16 16" aria-hidden="true" width="15" height="15" className={mo ? 'nhac-xoay' : ''}>
+          <path d="M4 6.5 8 10.5 12 6.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </button>
 
       {/*

@@ -3,8 +3,10 @@
 
 .nhac-wrap { display: inline-flex; gap: 2px; align-items: center; }
 .nhac-bam { gap: 7px; }
-.nhac-mo-bang { font-size: 10px; color: var(--muted); }
-.nhac-mo-bang:hover { color: var(--ink); }
+.nhac-mo-bang { color: var(--ink); padding: 0; }
+.nhac-mo-bang svg { transition: transform .18s ease; }
+.nhac-mo-bang .nhac-xoay { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .nhac-mo-bang svg { transition: none; } }
 
 /* Bảng thả xuống: hẹp hơn .pop mặc định (340px) vì chỉ chứa khung phát 16:9. */
 .pop-nhac { width: 300px; gap: 10px; }
