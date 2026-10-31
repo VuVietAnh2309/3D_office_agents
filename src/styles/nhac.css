@@ -17,13 +17,16 @@
 
 .nhac-nut {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   align-items: center;
-  background: var(--card, #1f1f1c);
-  border: 1px solid var(--line, #32312d);
+  /* Đậm hơn thẻ thường và có viền sáng: nó nằm trên khung cảnh 3D chứ không
+     trên nền phẳng, nên độ tương phản của thẻ bình thường là không đủ. */
+  background: rgb(26 26 24 / 0.92);
+  border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 999px;
   padding: 4px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.28);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(6px);
 }
 .nhac-bam,
 .nhac-mo-bang {
@@ -36,7 +39,18 @@
   border-radius: 999px;
   font: inherit;
 }
-.nhac-bam { width: 34px; height: 34px; position: relative; }
+/* Có chữ, vì nút 34px tối màu trên nền 3D tối thì không ai tìm ra —
+   mọi nút khác của app ("Overview", "Walk in"…) đều có nhãn. */
+.nhac-bam {
+  height: 34px;
+  position: relative;
+  gap: 7px;
+  padding: 0 13px 0 11px;
+  grid-auto-flow: column;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
 .nhac-mo-bang { width: 22px; height: 34px; font-size: 11px; opacity: .65; }
 .nhac-bam:hover,
 .nhac-mo-bang:hover { background: rgb(255 255 255 / 0.08); }
@@ -122,4 +136,16 @@
   /* Màn hẹp: dải phiên thu lại, nút về sát mép trái. */
   .nhac { left: 16px; }
   .nhac-bang { width: min(300px, calc(100vw - 48px)); }
+}
+
+.nhac-chu { letter-spacing: .005em; }
+
+/* Đóng bảng = đẩy ra ngoài màn hình, KHÔNG dùng display:none và không gỡ khỏi
+   cây DOM. Giữ nguyên kích thước để trình phát YouTube không bị thu về 0 và
+   tưởng mình không còn hiển thị. */
+.nhac-bang.nhac-an {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  pointer-events: none;
 }

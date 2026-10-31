@@ -95,22 +95,32 @@ export default function NhacNen() {
 
   return (
     <div className={`nhac${mo ? ' nhac-mo' : ''}`}>
-      {mo && (
-        <div className="nhac-bang" role="dialog" aria-label="Nhạc nền">
-          <div className="nhac-khung">
-            {chay ? (
-              <iframe
-                src={src}
-                title="Nhạc nền"
-                allow="autoplay; encrypted-media"
-                referrerPolicy="strict-origin-when-cross-origin"
-                loading="lazy"
-              />
-            ) : (
-              <p className="nhac-tat">Đang tắt. Bấm nút nhạc để phát.</p>
-            )}
-          </div>
-          <label className="nhac-doi">
+      {/*
+        Bảng LUÔN nằm trong cây DOM khi đang phát; đóng bảng chỉ đẩy nó ra
+        ngoài màn hình bằng CSS. Bản trước bọc cả khối này trong `{mo && …}`,
+        nên đóng bảng là gỡ luôn <iframe> — nút vẫn sáng "Đang phát" trong khi
+        không có gì phát. Gỡ khỏi cây cũng khiến React dựng lại iframe khi mở
+        lại, tức nhạc chạy lại từ đầu.
+      */}
+      <div
+        className={`nhac-bang${mo ? '' : ' nhac-an'}`}
+        role="dialog"
+        aria-label="Nhạc nền"
+        aria-hidden={!mo}
+      >
+        <div className="nhac-khung">
+          {chay ? (
+            <iframe
+              src={src}
+              title="Nhạc nền"
+              allow="autoplay; encrypted-media"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          ) : (
+            <p className="nhac-tat">Đang tắt. Bấm nút nhạc để phát.</p>
+          )}
+        </div>
+        <label className="nhac-doi">
             <span>Đổi nhạc</span>
             <input
               ref={oNhap}
@@ -128,12 +138,11 @@ export default function NhacNen() {
             <button type="button" onClick={doiNhac}>Dùng</button>
           </label>
           {loi && <p className="nhac-loi">{loi}</p>}
-          <p className="nhac-ghi">
-            Phát qua trình phát chính thức của YouTube. Tắt là gỡ hẳn khung phát,
-            không chạy ngầm.
-          </p>
-        </div>
-      )}
+        <p className="nhac-ghi">
+          Phát qua trình phát chính thức của YouTube. Tắt là gỡ hẳn khung phát,
+          không chạy ngầm. Thu gọn bảng thì nhạc vẫn chạy.
+        </p>
+      </div>
       <div className="nhac-nut">
         <button
           type="button"
@@ -141,10 +150,12 @@ export default function NhacNen() {
           aria-pressed={chay}
           title={chay ? 'Tắt nhạc' : 'Bật nhạc'}
           onClick={() => {
-            // Cố ý KHÔNG tự mở bảng: bảng rộng 300px, mở ra là che mất một
-            // mảng sân khấu. Bình thường chỉ cần một nút nhỏ; ai muốn xem tên
-            // bài hay đổi nhạc thì bấm mũi tên bên cạnh.
-            datChay(!chay);
+            const m = !chay;
+            datChay(m);
+            // Bật thì mở bảng: trình duyệt có thể chặn tự động phát, khi đó
+            // người dùng phải tự bấm nút play của YouTube — bảng đóng thì
+            // không với tới được. Thu gọn lại thì nhạc vẫn chạy.
+            if (m) datMo(true);
           }}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
@@ -159,6 +170,7 @@ export default function NhacNen() {
             <circle cx="6.5" cy="18" r="2.5" fill="currentColor" />
             <circle cx="16.5" cy="16" r="2.5" fill="currentColor" />
           </svg>
+          <span className="nhac-chu">{chay ? 'Đang phát' : 'Nhạc'}</span>
         </button>
         <button
           type="button"
