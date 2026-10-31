@@ -768,7 +768,18 @@ setInterval(() => {
     // suite) is not quiet; a tool still open after 10 minutes probably lost its PostToolUse.
     if (s.status === 'work' && !s.busy && (!s.inTool || now - s.lastEventAt > 600_000) && now - s.lastEventAt > 20_000) { s.status = 'rest'; broadcast({ k: 'sess', s: pub(s) }); }
     // Sessions seen only through hooks (no session file) leave after 10 quiet minutes.
-    if (!s.fromFile && now - s.lastEventAt > 600_000) dropSession(key, s);
+    /**
+     * Phiên chỉ tồn tại qua sự kiện mà im quá 10 phút thì coi như đã chết —
+     * đúng cho một phiên Claude Code tắt ngang không kịp báo SessionEnd.
+     *
+     * Nhưng nhân vật trang trí do `bang-dieu-khien/van-phong.mjs` dựng thì
+     * KHÔNG chết: chúng cố ý đứng đó, chỉ phát sự kiện khi được giao việc.
+     * Nhận ra chúng bằng dấu `vanphong` trong sid. Cách còn lại là cứ 8 phút
+     * bơm cho mỗi đứa một sự kiện rỗng để giữ chỗ — tức là nói dối máy chủ
+     * rằng vừa có chuyện gì đó xảy ra, chỉ để nó đừng dọn.
+     */
+    const laTrangTri = /vanphong/.test(s.sid || '');
+    if (!s.fromFile && !laTrangTri && now - s.lastEventAt > 600_000) dropSession(key, s);
     // A subagent that went quiet is finished: 90 s once its session rests, 5 min while the session still works.
     for (const [id, sub] of Object.entries(s.subs)) if (now - sub.seenAt > (s.status === 'rest' ? 90_000 : 300_000)) { finishSub(s, id, now); broadcast({ k: 'sess', s: pub(s) }); }
   }
