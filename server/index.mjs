@@ -39,6 +39,20 @@ const CLAUDE_DIR = process.env.CLAUDE_CONFIG_DIR || path.join(HOME, '.claude');
 const SESS_DIR = path.join(CLAUDE_DIR, 'sessions');
 // OFFICE_LOG: append the server's output to a file (the Windows sign-in script has nowhere else to put it)
 if (process.env.OFFICE_LOG) { const out = fs.createWriteStream(process.env.OFFICE_LOG, { flags: 'a' }); process.stdout.write = process.stderr.write = out.write.bind(out); }
+/**
+ * Tên ĐỘI hiển thị trên sàn văn phòng.
+ *
+ * Mặc định là tên thư mục kho git (`git.mjs`: `name: path.basename(root)`).
+ * Đổi tên thư mục thật thì hỏng kịch bản triển khai, tệp .code-workspace và
+ * bảng điều khiển bên ngoài — nên chỉ đổi NHÃN. Bản đồ nằm ở `ten-doi.json`
+ * cạnh thư mục này; sửa xong khởi động lại máy chủ là xong, không phải build
+ * lại, vì đây là mã chạy thẳng bằng node chứ không qua Next.
+ */
+const TEN_DOI_FILE = path.join(ROOT, 'ten-doi.json');
+let TEN_DOI = {};
+try { TEN_DOI = JSON.parse(fs.readFileSync(TEN_DOI_FILE, 'utf8')); } catch { /* chưa có: giữ nguyên tên thư mục */ }
+const tenDoi = (n) => TEN_DOI[n] || n;
+
 const DATA_DIR = process.env.OFFICE_DATA_DIR ? path.resolve(process.env.OFFICE_DATA_DIR) : path.join(ROOT, 'data');   // tests and a second dev copy use their own
 const PAGE_FILES = new Set(['/favicon.ico', '/icon.svg', '/apple-icon.png', '/opengraph-image.jpg', '/twitter-image.jpg', '/manifest.webmanifest', '/sw.js', '/icon-512.png']);   // (app/: the tab icons, the share card, the app on a phone's home screen; public/: its worker and big icon)
 const prefs = createPrefs(DATA_DIR), { tr } = prefs;   // tr('area.key', vars): words in the office's language (src/i18n)
@@ -242,7 +256,7 @@ const sessionsIn = (root) => [...sessions.values()].filter((s) => s.cwd && git.r
 function gitEvent(r, type, label) {
   const s = sessionsIn(r.root)[0]; if (!s) return;
   if (type === 'commit') { rollDay(); stats.commit = (stats.commit || 0) + 1; dirty = true; }   // (today's letters in the lobby's post box)
-  const e = { id: ++seq, ts: Date.now(), sess: s.id, name: s.name, type, label, repo: r.name, branch: r.branch, url: r.ciUrl || undefined };
+  const e = { id: ++seq, ts: Date.now(), sess: s.id, name: s.name, type, label, repo: tenDoi(r.name), branch: r.branch, url: r.ciUrl || undefined };
   pushFeed(e); broadcast({ k: 'ev', e, s: pub(s), stats }); chat.onEvent(e);
 }
 const git = createGit({
@@ -275,7 +289,7 @@ const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: s.title || '', 
   dayFirst: s.dayFirst || null,
   git: gitOf(s),
   usage: s.usage?.model ? { cost: Math.round(s.usage.cost * 100) / 100, ...liveCtx(s), model: s.usage.model, out: s.usage.out } : null });
-function gitOf(s) { const r = s.cwd && git.repoOf(s.cwd); return r ? { repo: r.name, branch: r.branch, dirty: r.dirty, ahead: r.ahead, ci: r.ci, ciName: r.ciName, ciUrl: r.ciUrl, born: r.born || null } : null; }
+function gitOf(s) { const r = s.cwd && git.repoOf(s.cwd); return r ? { repo: tenDoi(r.name), branch: r.branch, dirty: r.dirty, ahead: r.ahead, ci: r.ci, ciName: r.ciName, ciUrl: r.ciUrl, born: r.born || null } : null; }
 // context: exact from the status line while it reports (last 15 min), else estimated from the transcript
 const liveCtx = (s) => (s.live?.ctxMax && s.live.ctx != null && Date.now() - s.live.at < 15 * 60e3 ? { ctx: s.live.ctx, ctxMax: s.live.ctxMax, exact: true } : { ctx: s.usage.ctx, ctxMax: ctxMax(s.usage) });
 
