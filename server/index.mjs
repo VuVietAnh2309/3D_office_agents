@@ -305,7 +305,7 @@ const tenDoiCua = (s) => {
   return tenDoi(r ? r.name : path.basename(s.cwd || '')) || '';
 };
 
-const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: tenPhien(s) || s.title || '', proj: tenDoiCua(s), dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
+const pub = (s) => ({ id: s.id, pid: s.pid, name: s.name, title: s.title || '', proj: tenDoiCua(s), dir: tilde(s.cwd), link: s.link, desk: s.desk, status: s.status, lastPrompt: s.lastPrompt && oneLine(unwrapPaste(s.lastPrompt)),
   taskStart: s.taskStart, counts: s.counts, subs: Object.values(s.subs).map(pubSub), doneSubs: (s.doneSubs || []).map(pubSub), last: s.last, acct: acctOf(s),
   entry: s.entry || '', moved: s.parked ? { to: acctShown(s.parked.to), at: s.parked.at } : null,
   lastAt: s.lastEventAt || s.createdAt, doneAt: s.doneAt || 0, todos: s.todos || [], lastReply: s.lastReply || '', origin: s.origin || '',
@@ -694,6 +694,7 @@ async function doScan() {
     const link = j.bridgeSessionId ? 'https://claude.ai/code/' + j.bridgeSessionId : null;
     const name = j.name || base(j.cwd) || 'claude';
     if (s.name !== name || s.cwd !== j.cwd || s.link !== link) { s.name = name; s.cwd = j.cwd || ''; s.link = link; changed = true; noteDir(s.cwd); }
+    { const t = tenPhien(s); if (t && s.title !== t) { s.title = t; changed = true; } }   // (tên tự đặt: có ngay, không chờ đọc bản ghi)
     s.pid = j.pid; s.fromFile = true; s.busy = j.status === 'busy'; s.entry = j.entrypoint || '';
     // Claude's own session file says busy: trust it even if we missed the hook (e.g. the server restarted mid-turn).
     if (s.busy && s.status === 'rest') { s.status = 'work'; if (!s.taskStart) s.taskStart = j.statusUpdatedAt || Date.now(); s.lastEventAt = Math.max(s.lastEventAt, Date.now()); changed = true; }
@@ -729,7 +730,11 @@ async function refreshTitle(s, first = false) {
       for await (const line of rl) if (line.includes('"custom-title"')) custom = lastField(line, 'customTitle') ?? custom;
     }
     if (custom != null) s.customTitle = custom;
-    const title = clip(redact(oneLine(s.customTitle || ai || s.aiTitle || '')), 80);
+    // Tên tự đặt trong `ten-phien.json` đè lên mọi tiêu đề tự sinh. Đặt ở ĐÂY
+    // chứ không ở `pub()`: có bảy chỗ khác trong tệp này dựng tên theo kiểu
+    // `s.title || s.name` (ô chọn người nhận của chat là một), vá riêng `pub()`
+    // thì dải phiên đổi tên còn những chỗ kia vẫn tên cũ — đã mắc đúng lỗi đó.
+    const title = tenPhien(s) || clip(redact(oneLine(s.customTitle || ai || s.aiTitle || '')), 80);
     if (ai) s.aiTitle = ai;
     if (title && title !== s.title) { s.title = title; broadcast({ k: 'sess', s: pub(s) }); }
   } catch { /* no transcript yet */ }
@@ -807,7 +812,7 @@ async function onHook(p) {
   if (!s) {
     const key = 's' + sid;
     s = newSession(key);
-    s.sid = sid; s.cwd = p.cwd || ''; s.name = `${base(p.cwd) || 'claude'}-${sid.slice(0, 2)}`; noteDir(s.cwd);
+    s.sid = sid; s.cwd = p.cwd || ''; s.name = `${base(p.cwd) || 'claude'}-${sid.slice(0, 2)}`; s.title = tenPhien(s) || ''; noteDir(s.cwd);
     sessions.set(key, s); sidToKey.set(sid, key);
     broadcast({ k: 'sess', s: pub(s) });
   }
