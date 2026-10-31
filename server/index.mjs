@@ -1984,10 +1984,41 @@ const server = http.createServer((req, res) => {
       if (th?.running) { json(res, 409, { ok: false, code: 'busy', message: tr('chat.task.threadBusy', { name }) }); return; }
       let from;
       if (s) {   // the conversation itself: open in the editor and resting, it is closed there first; at work there: not now
+        /**
+         * Một hội thoại gần đầy ngữ cảnh thì `claude -p --resume` trả về
+         * "Prompt is too long" — và lúc đó cửa sổ editor ĐÃ bị đóng ở dưới,
+         * nên mất cả lượt nhắn lẫn chỗ đang làm việc, kèm một thông báo lỗi
+         * không nói được vì sao.
+         *
+         * Nên kiểm TRƯỚC khi đóng. Gần đầy thì mở một mạch mới trong cùng
+         * thư mục và giữ nguyên cửa sổ editor. Cái giá là mạch mới không nhớ
+         * gì của mạch cũ, nên phải nói thẳng ra — im lặng ở đây thì người
+         * dùng chỉ thấy Claude bỗng dưng quên hết mà không hiểu tại sao.
+         *
+         * Ngưỡng 85% chừa ~150 nghìn token: đủ cho tin nhắn, ảnh đính kèm và
+         * đoạn chỉ dẫn mà văn phòng tự thêm vào, mà vẫn hiếm khi phải cắt mạch.
+         */
+        const dayNgu = (() => {
+          if (!s.usage?.model) return false;   // chưa đo được: cứ nối tiếp như cũ
+          const c = liveCtx(s);
+          return c.ctxMax > 0 && c.ctx / c.ctxMax > 0.85;
+        })();
+        if (dayNgu) {
+          // Mạch mới đó được giữ 6 tiếng, giống hệt khi nhắn vào một thư mục
+          // dự án — nhắn tiếp là nối tiếp nó, không phải mỗi lần một mạch.
+          const noiTiep = th?.sid && Date.now() - th.at < 6 * 3600e3 ? th.sid : null;
+          from = { sid: noiTiep, fork: false, name, orig: key, chat: true };
+          if (!noiTiep) {
+            chat.system(prefs.lang() === 'vi'
+              ? `💬 ${name}: mạch cũ đã gần đầy ngữ cảnh, không nối tiếp được. Đang mở một mạch mới trong cùng thư mục — nó KHÔNG nhớ gì của mạch cũ.`
+              : `💬 ${name}: that conversation is near its context limit, so this starts a new one in the same folder — it remembers nothing of the old one.`);
+          }
+        } else {
         const open = s.pid && !s.parked;
         if (open && (s.status !== 'rest' || s.busy || [...pending.values()].some((p) => p.sess === s.id))) { json(res, 409, { ok: false, code: 'macBusy', message: tr('chat.task.macBusy', { name }) }); return; }
         if (open) { const pk = await parkForPhone(s); if (!pk.ok) { json(res, 409, { ok: false, code: 'macOpen', message: pk.message }); return; } }
         from = { sid: s.sid, fork: false, name, id: s.id, orig: key, chat: true, acct: acctOf(s) || '' };
+        }
       } else {   // a project: a new conversation, or the one you started there (for 6 hours; ＋ asks for a new one)
         const on = th?.sid && !b.fresh && Date.now() - th.at < 6 * 3600e3 ? th.sid : null;
         from = { sid: on, fork: false, name, orig: key, chat: true };
