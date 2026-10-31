@@ -7,7 +7,6 @@ import MacDrawer from '@/components/office/MacDrawer';
 import PhoneModal from '@/components/office/PhoneModal';
 import WrappedModal from '@/components/office/WrappedModal';
 import Toast from '@/components/office/Toast';
-import NhacNen from '@/components/office/NhacNen';
 import OfficeBoot from '@/components/OfficeBoot';
 
 // Rendered on every request (the components read the office's language from the request headers): the server in
@@ -24,7 +23,6 @@ export default function OfficePage() {
       <PhoneModal />
       <WrappedModal />
       <Toast />
-      <NhacNen />
       <OfficeBoot />
     </div>
   );

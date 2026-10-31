@@ -94,16 +94,49 @@ export default function NhacNen() {
     : `https://www.youtube-nocookie.com/embed/${giaTri}?autoplay=1&loop=1&playlist=${giaTri}&rel=0&modestbranding=1`;
 
   return (
-    <div className={`nhac${mo ? ' nhac-mo' : ''}`}>
+    <div className="pop-wrap nhac-wrap">
+      <button
+        type="button"
+        className="tb-btn nhac-bam"
+        aria-pressed={chay}
+        title={chay ? 'Tắt nhạc' : 'Bật nhạc'}
+        onClick={() => {
+          const m = !chay;
+          datChay(m);
+          // Bật thì mở bảng: trình duyệt có thể chặn tự động phát, khi đó người
+          // dùng phải tự bấm nút play của YouTube — bảng đóng thì không với tới.
+          // Thu gọn lại sau đó thì nhạc vẫn chạy.
+          datMo(m);
+        }}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+          <path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="6.5" cy="18" r="2.5" fill="currentColor" />
+          <circle cx="16.5" cy="16" r="2.5" fill="currentColor" />
+        </svg>
+        <span className="lbl">{chay ? 'Đang phát' : 'Nhạc'}</span>
+      </button>
+      <button
+        type="button"
+        className="tb-btn tb-icon nhac-mo-bang"
+        aria-expanded={mo}
+        aria-controls="pop-nhac"
+        title={mo ? 'Thu gọn bảng nhạc' : 'Mở bảng nhạc'}
+        onClick={() => datMo(!mo)}
+      >
+        <span aria-hidden="true">{mo ? '\u25B4' : '\u25BE'}</span>
+      </button>
+
       {/*
-        Bảng LUÔN nằm trong cây DOM khi đang phát; đóng bảng chỉ đẩy nó ra
-        ngoài màn hình bằng CSS. Bản trước bọc cả khối này trong `{mo && …}`,
-        nên đóng bảng là gỡ luôn <iframe> — nút vẫn sáng "Đang phát" trong khi
-        không có gì phát. Gỡ khỏi cây cũng khiến React dựng lại iframe khi mở
-        lại, tức nhạc chạy lại từ đầu.
+        Bảng LUÔN ở trong cây DOM khi đang phát; đóng bảng chỉ đẩy nó ra ngoài
+        màn hình bằng CSS. Bản trước bọc cả khối này trong `{mo && …}`, nên đóng
+        bảng là gỡ luôn <iframe> — nút vẫn sáng "Đang phát" trong khi không có
+        gì phát. Gỡ khỏi cây cũng khiến React dựng lại iframe lúc mở lại, tức
+        nhạc chạy lại từ đầu.
       */}
       <div
-        className={`nhac-bang${mo ? '' : ' nhac-an'}`}
+        id="pop-nhac"
+        className={`pop pop-nhac${mo ? '' : ' nhac-an'}`}
         role="dialog"
         aria-label="Nhạc nền"
         aria-hidden={!mo}
@@ -117,70 +150,31 @@ export default function NhacNen() {
               referrerPolicy="strict-origin-when-cross-origin"
             />
           ) : (
-            <p className="nhac-tat">Đang tắt. Bấm nút nhạc để phát.</p>
+            <p className="nhac-tat">Đang tắt. Bấm nút Nhạc để phát.</p>
           )}
         </div>
         <label className="nhac-doi">
-            <span>Đổi nhạc</span>
-            <input
-              ref={oNhap}
-              type="text"
-              value={nhap}
-              placeholder="Dán link YouTube (video hoặc playlist)"
-              onChange={(e) => {
-                datNhap(e.target.value);
-                datLoi('');
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') doiNhac();
-              }}
-            />
-            <button type="button" onClick={doiNhac}>Dùng</button>
-          </label>
-          {loi && <p className="nhac-loi">{loi}</p>}
+          <span>Đổi nhạc</span>
+          <input
+            ref={oNhap}
+            type="text"
+            value={nhap}
+            placeholder="Dán link YouTube (video hoặc playlist)"
+            onChange={(e) => {
+              datNhap(e.target.value);
+              datLoi('');
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') doiNhac();
+            }}
+          />
+          <button type="button" onClick={doiNhac}>Dùng</button>
+        </label>
+        {loi && <p className="nhac-loi">{loi}</p>}
         <p className="nhac-ghi">
           Phát qua trình phát chính thức của YouTube. Tắt là gỡ hẳn khung phát,
           không chạy ngầm. Thu gọn bảng thì nhạc vẫn chạy.
         </p>
-      </div>
-      <div className="nhac-nut">
-        <button
-          type="button"
-          className={`nhac-bam${chay ? ' dang-chay' : ''}`}
-          aria-pressed={chay}
-          title={chay ? 'Tắt nhạc' : 'Bật nhạc'}
-          onClick={() => {
-            const m = !chay;
-            datChay(m);
-            // Bật thì mở bảng: trình duyệt có thể chặn tự động phát, khi đó
-            // người dùng phải tự bấm nút play của YouTube — bảng đóng thì
-            // không với tới được. Thu gọn lại thì nhạc vẫn chạy.
-            if (m) datMo(true);
-          }}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
-            <path
-              d="M9 18V6l10-2v12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="6.5" cy="18" r="2.5" fill="currentColor" />
-            <circle cx="16.5" cy="16" r="2.5" fill="currentColor" />
-          </svg>
-          <span className="nhac-chu">{chay ? 'Đang phát' : 'Nhạc'}</span>
-        </button>
-        <button
-          type="button"
-          className="nhac-mo-bang"
-          aria-expanded={mo}
-          title={mo ? 'Thu gọn' : 'Mở bảng nhạc'}
-          onClick={() => datMo(!mo)}
-        >
-          {mo ? '▾' : '▴'}
-        </button>
       </div>
     </div>
   );

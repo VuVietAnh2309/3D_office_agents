@@ -1,151 +1,66 @@
-/* Nhạc nền — nút nổi ở góc dưới bên trái sân khấu, bảng mở lên trên. */
-.nhac {
+/* Nhạc nền — nút nằm trong hàng điều khiển trên đỉnh, cạnh Team chat / Replay /
+   Settings. Dùng lại .tb-btn và .pop của app, nên chỉ cần phần riêng ở đây. */
+
+.nhac-wrap { display: inline-flex; gap: 2px; align-items: center; }
+.nhac-bam { gap: 7px; }
+.nhac-mo-bang { font-size: 10px; color: var(--muted); }
+.nhac-mo-bang:hover { color: var(--ink); }
+
+/* Bảng thả xuống: hẹp hơn .pop mặc định (340px) vì chỉ chứa khung phát 16:9. */
+.pop-nhac { width: 300px; gap: 10px; }
+
+/* Đóng bảng = đẩy ra ngoài màn hình, KHÔNG dùng display:none và KHÔNG gỡ khỏi
+   cây DOM — gỡ là mất iframe, mất nhạc. Giữ nguyên kích thước để trình phát
+   YouTube không bị thu về 0 rồi tưởng mình đã bị ẩn. */
+.pop-nhac.nhac-an {
   position: fixed;
-  /* Mép trái sân khấu (dải phiên rộng 300px), và cao hơn thanh camera ở đáy.
-     Để ở góc dưới bên trái thì nút đè lên một dòng phiên, bảng thì che cả
-     danh sách — mất thông tin để lấy chỗ cho nhạc là đổi hỏng. */
-  left: 316px;
-  bottom: 76px;
-  z-index: 60;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
+  left: -10000px;
+  right: auto;
+  top: 0;
   pointer-events: none;
 }
-.nhac > * { pointer-events: auto; }
 
-.nhac-nut {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  /* Đậm hơn thẻ thường và có viền sáng: nó nằm trên khung cảnh 3D chứ không
-     trên nền phẳng, nên độ tương phản của thẻ bình thường là không đủ. */
-  background: rgb(26 26 24 / 0.92);
-  border: 1px solid rgb(255 255 255 / 0.14);
-  border-radius: 999px;
-  padding: 4px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
-  backdrop-filter: blur(6px);
-}
-.nhac-bam,
-.nhac-mo-bang {
-  display: grid;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  color: var(--ink, #eceae5);
-  cursor: pointer;
-  border-radius: 999px;
-  font: inherit;
-}
-/* Có chữ, vì nút 34px tối màu trên nền 3D tối thì không ai tìm ra —
-   mọi nút khác của app ("Overview", "Walk in"…) đều có nhãn. */
-.nhac-bam {
-  height: 34px;
-  position: relative;
-  gap: 7px;
-  padding: 0 13px 0 11px;
-  grid-auto-flow: column;
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.nhac-mo-bang { width: 22px; height: 34px; font-size: 11px; opacity: .65; }
-.nhac-bam:hover,
-.nhac-mo-bang:hover { background: rgb(255 255 255 / 0.08); }
-.nhac-mo-bang:hover { opacity: 1; }
-
-/* Đang phát: viền sáng + nhịp thở nhẹ. Dừng hẳn khi người dùng xin giảm chuyển động. */
-.nhac-bam.dang-chay { color: #6cc08b; background: rgb(108 192 139 / 0.14); }
-.nhac-bam.dang-chay::after {
-  content: '';
-  position: absolute;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgb(108 192 139 / 0.5);
-  animation: nhac-tho 2.4s ease-in-out infinite;
-}
-@keyframes nhac-tho {
-  0%, 100% { transform: scale(1); opacity: .55; }
-  50% { transform: scale(1.18); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .nhac-bam.dang-chay::after { animation: none; opacity: .5; }
-}
-
-.nhac-bang {
-  width: 300px;
-  background: var(--card, #1f1f1c);
-  border: 1px solid var(--line, #32312d);
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
-  color: var(--ink, #eceae5);
-  font-size: 12.5px;
-}
 .nhac-khung {
   aspect-ratio: 16 / 9;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   background: #000;
   display: grid;
   place-items: center;
 }
 .nhac-khung iframe { width: 100%; height: 100%; border: 0; display: block; }
-.nhac-tat { margin: 0; color: var(--mo, #908c84); font-size: 12px; text-align: center; padding: 0 10px; }
+.nhac-tat { margin: 0; color: var(--muted); font-size: 12px; text-align: center; padding: 0 12px; }
 
-.nhac-doi {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 6px;
-  margin-top: 10px;
-  align-items: center;
-}
-.nhac-doi > span {
-  grid-column: 1 / -1;
-  color: var(--mo, #908c84);
-  font-size: 11px;
-}
+.nhac-doi { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
+.nhac-doi > span { grid-column: 1 / -1; color: var(--muted); font-size: 11px; }
 .nhac-doi input {
   min-width: 0;
   font: inherit;
-  padding: 5px 8px;
-  border-radius: 7px;
-  border: 1px solid var(--line, #32312d);
-  background: var(--bg, #161614);
-  color: inherit;
+  font-size: 12.5px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+  color: var(--ink);
 }
+.nhac-doi input:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 1px; }
 .nhac-doi button {
   font: inherit;
-  padding: 5px 10px;
-  border-radius: 7px;
-  border: 1px solid var(--line, #32312d);
-  background: transparent;
-  color: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  background: var(--card-2);
+  color: var(--ink);
   cursor: pointer;
 }
-.nhac-doi button:hover { border-color: var(--mo, #908c84); }
+.nhac-doi button:hover { border-color: rgba(255, 255, 255, .22); }
 
-.nhac-loi { margin: 6px 0 0; color: #f08a82; font-size: 11.5px; }
-.nhac-ghi { margin: 8px 0 0; color: var(--mo, #908c84); font-size: 11px; line-height: 1.45; }
+.nhac-loi { margin: 0; color: var(--red, #f08a82); font-size: 11.5px; }
+.nhac-ghi { margin: 0; color: var(--faint); font-size: 11px; line-height: 1.45; }
 
-/* Màn hẹp: rail bên trái thu lại, nút vẫn ở nguyên góc nhưng bảng co theo. */
-@media (max-width: 720px) {
-  /* Màn hẹp: dải phiên thu lại, nút về sát mép trái. */
-  .nhac { left: 16px; }
-  .nhac-bang { width: min(300px, calc(100vw - 48px)); }
-}
-
-.nhac-chu { letter-spacing: .005em; }
-
-/* Đóng bảng = đẩy ra ngoài màn hình, KHÔNG dùng display:none và không gỡ khỏi
-   cây DOM. Giữ nguyên kích thước để trình phát YouTube không bị thu về 0 và
-   tưởng mình không còn hiển thị. */
-.nhac-bang.nhac-an {
-  position: fixed;
-  left: -10000px;
-  top: 0;
-  pointer-events: none;
+/* Màn hẹp: nhãn chữ trong hàng trên đỉnh đã bị app ẩn, bảng co theo màn. */
+@media (max-width: 900px) {
+  .pop-nhac { width: min(300px, calc(100vw - 24px)); }
 }
