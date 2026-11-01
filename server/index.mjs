@@ -782,7 +782,7 @@ setInterval(() => {
      * Phiên chỉ tồn tại qua sự kiện mà im quá 10 phút thì coi như đã chết —
      * đúng cho một phiên Claude Code tắt ngang không kịp báo SessionEnd.
      *
-     * Nhưng nhân vật trang trí do `bang-dieu-khien/van-phong.mjs` dựng thì
+     * Nhưng nhân vật trang trí do `manager/van-phong.mjs` dựng thì
      * KHÔNG chết: chúng cố ý đứng đó, chỉ phát sự kiện khi được giao việc.
      * Nhận ra chúng bằng dấu `vanphong` trong sid. Cách còn lại là cứ 8 phút
      * bơm cho mỗi đứa một sự kiện rỗng để giữ chỗ — tức là nói dối máy chủ

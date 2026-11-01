@@ -108,7 +108,7 @@ export default {
   },
   print: { whose: ["A printout? I'll grab it 🖨️", "Something printed, I'll get it"], got: ['Got it 📄', 'Here it is'] },
   coffee: { who: ["Who made coffee? I'll take it ☕", 'Smells great, coming! ☕'], thanks: ['Thanks! ☕', 'Lovely. Back to work'] },
-  cat: { onDesk: ['Hey kitty, not on the keyboard 😹', "Cat, I'm typing here!"], down: ['Down you go, good kitty 🐾', 'Off you go, nap on the sofa'] },
+  cat: { onDesk: ['Hey TuanKiet, not on the keyboard 😹', "TuanKiet, I'm typing here!"], down: ['Down you go, good kitty 🐾', 'Off you go, nap on the sofa'] },
   // where someone is when not at their desk (the session list): a trip out, coming or going
   where: {
     home: 'Gone home', toShop: 'Popping out to {shop}', toNight: 'Late-night snack at {shop}', fromShop: 'Back from {shop}', rushing: 'Work came in, hurrying back',

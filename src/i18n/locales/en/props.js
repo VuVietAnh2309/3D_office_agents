@@ -13,7 +13,7 @@ export default {
   printer: { name: 'Printer', hint: 'Print a page (someone fetches it), see the turns that just finished' },
   arcade: { name: 'Arcade machine', hint: 'Drop in a coin', soon: "The minigame is being built, it'll be playable soon." },
   aquarium: { name: 'Aquarium', hint: 'Feed the fish' },
-  cat: { name: 'Office cat', hint: 'Pet the cat (it likes keyboards)' },
+  cat: { name: 'TuanKiet', hint: 'Pet TuanKiet (it likes keyboards)' },
   vac: { name: 'Robot vacuum', hint: 'Click to make it spin' },
   clock: {
     name: 'Clock',
@@ -24,7 +24,7 @@ export default {
     night: 'Night',
   },
   neon: { name: 'SHIP IT sign', hint: 'Flick it on and off for fun' },
-  sofa: { name: 'Sofa', hint: 'Call the cat up for a nap' },
+  sofa: { name: 'Sofa', hint: 'Call TuanKiet up for a nap' },
   trophies: { name: 'Trophy cabinet', hint: 'Trophies for your milestones · click to see them' },
   director: { name: "Director's office", hint: 'The director (you) carries prompts to desks and takes reports when work is done · trophy shelf' },
   wc: { name: 'Restroom', hint: 'Who is in there' },

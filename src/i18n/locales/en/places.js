@@ -151,7 +151,7 @@ export default {
     sub: 'Sofa, aquarium, arcade, foosball and the launch pad. Whoever finishes comes here to sit',
     feed: 'Feed the fish',
     coin: 'Drop a coin in the arcade',
-    cat: 'Call the cat to the sofa',
+    cat: 'Call TuanKiet to the sofa',
     rocket: 'Launch the rocket',
     done: 'Done “{prompt}”',
     noPrompt: 'No prompt yet',

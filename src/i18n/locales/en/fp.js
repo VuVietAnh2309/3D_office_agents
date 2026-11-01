@@ -1,7 +1,7 @@
 // First person: your own character and the button for what is in front of you (src/office/interact/first-person.js).
 export default {
   you: 'You',
-  petCat: 'Pet the cat',
+  petCat: 'Pet TuanKiet',
   subOf: "{name} ({parent}'s subagent)",
   watch: 'See what {name} is doing',
   wake: 'Wake {name} up',

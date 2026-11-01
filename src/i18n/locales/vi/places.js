@@ -147,7 +147,7 @@ export default {
     sub: 'Sofa, bể cá, arcade, bi lắc và bệ phóng deploy. Người xong việc ra đây ngồi',
     feed: 'Cho cá ăn',
     coin: 'Bỏ xu chơi arcade',
-    cat: 'Gọi mèo lên sofa',
+    cat: 'Gọi TuanKiet lên sofa',
     rocket: 'Phóng tên lửa',
     done: 'Xong “{prompt}”',
     noPrompt: 'Chưa nhận việc',

@@ -1,7 +1,7 @@
 // First person: your own character and the button for what is in front of you (src/office/interact/first-person.js).
 export default {
   you: 'Bạn',
-  petCat: 'Vuốt mèo',
+  petCat: 'Vuốt TuanKiet',
   subOf: '{name} (trợ lý của {parent})',
   watch: 'Xem {name} đang làm gì',
   wake: 'Gọi {name} dậy',

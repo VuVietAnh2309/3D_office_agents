@@ -12,7 +12,7 @@ export default {
   printer: { name: 'Máy in', hint: 'In một trang (sẽ có người ra lấy), xem các lượt vừa xong việc' },
   arcade: { name: 'Máy arcade', hint: 'Bỏ một đồng xu', soon: 'Minigame đang được làm, sắp chơi được.' },
   aquarium: { name: 'Bể cá', hint: 'Cho cá ăn' },
-  cat: { name: 'Mèo văn phòng', hint: 'Vuốt mèo (nó thích nằm lên bàn phím)' },
+  cat: { name: 'TuanKiet', hint: 'Vuốt TuanKiet (nó thích nằm lên bàn phím)' },
   vac: { name: 'Robot hút bụi', hint: 'Bấm cho nó xoay một vòng' },
   clock: {
     name: 'Đồng hồ',
@@ -23,7 +23,7 @@ export default {
     night: 'Ban đêm',
   },
   neon: { name: 'Biển SHIP IT', hint: 'Bật tắt cho vui' },
-  sofa: { name: 'Sofa', hint: 'Gọi mèo lên ngủ trưa' },
+  sofa: { name: 'Sofa', hint: 'Gọi TuanKiet lên ngủ trưa' },
   trophies: { name: 'Tủ cúp', hint: 'Cúp các mốc làm việc của bạn · bấm để xem' },
   director: { name: 'Phòng Giám đốc', hint: 'Giám đốc (là bạn) mang việc tới bàn, nhận báo cáo khi xong · kệ cúp các mốc' },
   wc: { name: 'Nhà vệ sinh', hint: 'Ai đang dùng' },

@@ -98,7 +98,7 @@ export default {
   },
   print: { whose: ['Ai in gì thế? Để mình lấy 🖨️', 'Có bản in kìa, để mình ra lấy'], got: ['Lấy được rồi 📄', 'À, bản in đây rồi'] },
   coffee: { who: ['Ai pha cà phê thế? Cho mình ly này nhé ☕', 'Thơm quá, để mình ra lấy ☕'], thanks: ['Cảm ơn nhé ☕', 'Ngon! Làm tiếp nào'] },
-  cat: { onDesk: ['Ơ kìa mèo, đừng nằm lên bàn phím 😹', 'Mèo ơi, mình đang gõ mà!'], down: ['Xuống đi nào, ngoan 🐾', 'Ra sofa mà ngủ nhé'] },
+  cat: { onDesk: ['Ơ kìa TuanKiet, đừng nằm lên bàn phím 😹', 'TuanKiet ơi, mình đang gõ mà!'], down: ['Xuống đi nào, ngoan 🐾', 'Ra sofa mà ngủ nhé'] },
   // where someone is when not at their desk (the session list): a trip out, coming or going
   where: {
     home: 'Đã về nhà', toShop: 'Đang ra {shop}', toNight: 'Xuống {shop} ăn khuya', fromShop: 'Đang từ {shop} về', rushing: 'Có việc, đang chạy về',
