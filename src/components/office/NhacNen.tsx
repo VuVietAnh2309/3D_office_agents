@@ -15,10 +15,26 @@
  * Dừng nhạc = gỡ hẳn <iframe> khỏi DOM, không chỉ tạm dừng — để không còn gì
  * của bên thứ ba chạy ngầm khi bạn đã tắt.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 const MAC_DINH = '3LUJ_cp655M';
 const KHOA = 'office-nhac-id';
+
+/**
+ * Mã nhạc đã lưu, đọc MỘT lần lúc dựng state.
+ *
+ * Trên máy chủ không có `localStorage` nên dòng này ném ReferenceError — bắt
+ * lại rồi trả về mặc định. Máy chủ ra MAC_DINH còn trình duyệt ra mã đã lưu,
+ * KHÔNG lệch HTML, vì `ma` chỉ đi vào `src` của <iframe>, mà iframe chỉ dựng
+ * khi `chay` = true — lúc hydrate `chay` luôn false nên `ma` không ra DOM.
+ */
+function maDaLuu(): string {
+  try {
+    return localStorage.getItem(KHOA) || MAC_DINH;
+  } catch {
+    return MAC_DINH; // máy chủ, hoặc trình duyệt chặn lưu trữ
+  }
+}
 
 /** Bóc mã video hoặc mã playlist từ một đường dẫn YouTube bất kỳ. */
 export function bocMa(s: string): { video?: string; list?: string } | null {
@@ -45,23 +61,12 @@ export function bocMa(s: string): { video?: string; list?: string } | null {
 }
 
 export default function NhacNen() {
-  const [ma, datMa] = useState<string>(MAC_DINH);
+  const [ma, datMa] = useState<string>(maDaLuu);
   const [chay, datChay] = useState(false);
   const [mo, datMo] = useState(false);
   const [nhap, datNhap] = useState('');
   const [loi, datLoi] = useState('');
   const oNhap = useRef<HTMLInputElement>(null);
-
-  // Chỉ đọc localStorage sau khi gắn vào DOM: đọc lúc dựng trên máy chủ sẽ lệch
-  // giữa HTML máy chủ gửi xuống và HTML trình duyệt dựng lại.
-  useEffect(() => {
-    try {
-      const luu = localStorage.getItem(KHOA);
-      if (luu) datMa(luu);
-    } catch {
-      /* trình duyệt chặn lưu trữ: dùng mặc định */
-    }
-  }, []);
 
   const luuMa = (m: string) => {
     datMa(m);
