@@ -1,6 +1,11 @@
 # Local state: access token, phone PIN, replay logs, process owners, server log
 data/
 node_modules/
+# Tên đội / tên phiên của RIÊNG máy này. Hai tệp ten-*.json đi kèm kho chỉ là ví
+# dụ; bản .local.json đè lên chúng và không bao giờ đi theo git push, nên tên thư
+# mục dự án và mã phiên thật không lên kho công khai.
+ten-doi.local.json
+ten-phien.local.json
 # Machine-specific copy of the login service (the CLI writes its own to ~/Library/LaunchAgents)
 com.my-office.plist
 com.claude-office.plist

@@ -40,25 +40,30 @@ const SESS_DIR = path.join(CLAUDE_DIR, 'sessions');
 // OFFICE_LOG: append the server's output to a file (the Windows sign-in script has nowhere else to put it)
 if (process.env.OFFICE_LOG) { const out = fs.createWriteStream(process.env.OFFICE_LOG, { flags: 'a' }); process.stdout.write = process.stderr.write = out.write.bind(out); }
 /**
- * Tên ĐỘI hiển thị trên sàn văn phòng.
+ * Đọc một bảng tên: tệp đi kèm kho, rồi ĐÈ bằng `<tên>.local.json` nếu có.
  *
- * Mặc định là tên thư mục kho git (`git.mjs`: `name: path.basename(root)`).
- * Đổi tên thư mục thật thì hỏng kịch bản triển khai, tệp .code-workspace và
- * bảng điều khiển bên ngoài — nên chỉ đổi NHÃN. Bản đồ nằm ở `ten-doi.json`
- * cạnh thư mục này; sửa xong khởi động lại máy chủ là xong, không phải build
- * lại, vì đây là mã chạy thẳng bằng node chứ không qua Next.
+ * Hai tệp đi kèm kho chỉ chứa VÍ DỤ, vì kho này công khai: tên thư mục dự án
+ * và mã phiên là chuyện riêng của từng máy, đẩy lên GitHub rồi thì gỡ khỏi
+ * lịch sử rất phiền. Bản `.local.json` nằm trong .gitignore nên không bao giờ
+ * đi theo `git push`; có nó thì nó thắng, từng khoá một.
+ *
+ * Gộp theo KHOÁ chứ không thay cả tệp, nên bản cục bộ chỉ cần ghi những mục
+ * muốn khác, không phải chép lại cả bảng.
  */
+function docBangTen(ten) {
+  const doc = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return {}; } };
+  return { ...doc(path.join(ROOT, `${ten}.json`)), ...doc(path.join(ROOT, `${ten}.local.json`)) };
+}
+
 /**
- * Tên hiển thị của một PHIÊN, tra theo thư mục nó được khởi động.
+ * Tên hiển thị của một PHIÊN, tra theo mã phiên hoặc thư mục nó được khởi động.
  *
  * Mặc định là tiêu đề do Claude Code tự đặt (`aiTitle` trong bản ghi) hoặc tên
  * thư mục. Đổi được bằng cách tự đặt lại tên đoạn chat trong Claude Code, nhưng
  * tra theo THƯ MỤC thì bền hơn: mở đoạn chat mới ở cùng chỗ vẫn ra đúng tên,
  * khỏi phải đặt lại mỗi lần.
  */
-const TEN_PHIEN_FILE = path.join(ROOT, 'ten-phien.json');
-let TEN_PHIEN = {};
-try { TEN_PHIEN = JSON.parse(fs.readFileSync(TEN_PHIEN_FILE, 'utf8')); } catch { /* chưa có: dùng tiêu đề tự sinh */ }
+const TEN_PHIEN = docBangTen('ten-phien');
 /**
  * Tra theo MÃ PHIÊN trước, rồi mới tới thư mục.
  *
@@ -71,9 +76,16 @@ try { TEN_PHIEN = JSON.parse(fs.readFileSync(TEN_PHIEN_FILE, 'utf8')); } catch {
  */
 const tenPhien = (s) => (s.sid && TEN_PHIEN[s.sid]) || (s.cwd && TEN_PHIEN[s.cwd]) || '';
 
-const TEN_DOI_FILE = path.join(ROOT, 'ten-doi.json');
-let TEN_DOI = {};
-try { TEN_DOI = JSON.parse(fs.readFileSync(TEN_DOI_FILE, 'utf8')); } catch { /* chưa có: giữ nguyên tên thư mục */ }
+/**
+ * Tên ĐỘI hiển thị trên sàn văn phòng.
+ *
+ * Mặc định là tên thư mục kho git (`git.mjs`: `name: path.basename(root)`).
+ * Đổi tên thư mục thật thì hỏng kịch bản triển khai, tệp .code-workspace và
+ * bảng điều khiển bên ngoài — nên chỉ đổi NHÃN. Bản đồ nằm ở `ten-doi.json`
+ * cạnh thư mục này; sửa xong khởi động lại máy chủ là xong, không phải build
+ * lại, vì đây là mã chạy thẳng bằng node chứ không qua Next.
+ */
+const TEN_DOI = docBangTen('ten-doi');
 const tenDoi = (n) => TEN_DOI[n] || n;
 
 const DATA_DIR = process.env.OFFICE_DATA_DIR ? path.resolve(process.env.OFFICE_DATA_DIR) : path.join(ROOT, 'data');   // tests and a second dev copy use their own
