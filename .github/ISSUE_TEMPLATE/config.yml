@@ -1,9 +1,11 @@
-# "New issue" offers these first: a question or an idea goes to Discussions (answered there, findable later), a bug stays an issue
+# "New issue" offers these first: a question or an idea goes to Discussions (answered there, findable later), a bug stays an issue.
+# Kho này là bản dựng riêng; diễn đàn chung vẫn nằm ở dự án gốc nên hai mục dưới trỏ về đó.
+# This repo is a customized build; the community forum lives upstream, so both links point there.
 blank_issues_enabled: true
 contact_links:
-  - name: Hỏi đáp · Questions
+  - name: Hỏi đáp · Questions (dự án gốc · upstream)
     url: https://github.com/khanh020905/my-office/discussions/categories/q-a
     about: Cài đặt, cách dùng, dùng trên điện thoại · Setup, how-to, using it from your phone
-  - name: Ý tưởng · Ideas
+  - name: Ý tưởng · Ideas (dự án gốc · upstream)
     url: https://github.com/khanh020905/my-office/discussions/categories/ideas
     about: Muốn văn phòng có thêm gì · Something you'd like the office to have

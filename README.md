@@ -1,4 +1,4 @@
-# My Office
+# 3D Office Agents
 
 English · [Tiếng Việt](README.vi.md)
 
@@ -11,16 +11,40 @@ A 3D office where your Claude Code sessions come to work. Each session is a char
 
 The office also looks after your Mac: RAM per session, forgotten dev servers, one-click cleanup.
 
-![My Office: the company floor with sessions at work](docs/media/demo.gif)
+![The company floor with sessions at work](docs/media/demo.gif)
+
+> **This is a customized build of [My Office](https://github.com/khanh020905/my-office) by
+> [khanh020905](https://github.com/khanh020905), used under the MIT licence.** The office, the machine panel and
+> everything else described below are that project's work. What this build changes is listed in
+> [What this build changes](#what-this-build-changes). For the original, unmodified project, go upstream.
 
 **Try it before you install anything.** The demo has made-up projects and needs no Claude Code: run `npm run dev` and
-open <http://localhost:4310/?demo>. Or try it online, nothing to install: <https://khanh020905.github.io/my-office/>
-(a static build of the same demo, published by `.github/workflows/pages.yml`).
+open <http://localhost:4310/?demo>. Or try it online, nothing to install:
+<https://vuvietanh2309.github.io/3D_office_agents/> (a static build of the same demo, published by
+`.github/workflows/pages.yml` — it needs Settings → Pages → Source: GitHub Actions turned on once).
 
-**Questions or ideas?** Ask in [Discussions → Q&A](https://github.com/khanh020905/my-office/discussions/categories/q-a), suggest something in
-[Ideas](https://github.com/khanh020905/my-office/discussions/categories/ideas), or show your office in [Show and tell](https://github.com/khanh020905/my-office/discussions/categories/show-and-tell).
+**Questions or ideas?** The community lives upstream: ask in
+[Discussions → Q&A](https://github.com/khanh020905/my-office/discussions/categories/q-a), suggest something in
+[Ideas](https://github.com/khanh020905/my-office/discussions/categories/ideas), or show your office in
+[Show and tell](https://github.com/khanh020905/my-office/discussions/categories/show-and-tell). Please report
+anything that only happens in *this* build here, not upstream.
 
 > My Office is a community project. It is not made by, endorsed by or affiliated with Anthropic.
+
+## What this build changes
+
+Everything below this section is the upstream project, unchanged. These are the differences:
+
+| What | Files |
+| --- | --- |
+| **Teams get their own display names.** A session's badge shows a team label from `ten-doi.json` (`folder → label`) instead of the raw folder name. The label is its own field rather than a git-derived one, so a folder that isn't a git repo can still be named. | `ten-doi.json`, `server/index.mjs`, `src/office/ui/activity.js`, `src/office/net/live.js`, `src/office/people/{accountant,hr}.js` |
+| **Sessions get their own names.** `ten-phien.json` maps a session id — or failing that, a folder — to a name. The session id is tried first, so two sessions in one folder stay apart. The name is written at the root of the session record, because the recipient picker reads it by a different path than the chat does. | `ten-phien.json`, `server/index.mjs` |
+| **The Director character is named `AnhVu - Leader`**, and the office cat is named `TuanKiet`, in both languages. | `src/i18n/locales/{en,vi}/` |
+| **A background-music button**: the official YouTube player, embedded, looping. It sits in the top control row and uses the app's own popover, rather than covering the session list or opening a panel by itself. | `src/components/office/NhacNen.tsx`, `src/components/office/TopBar.tsx`, `src/styles/nhac.css`, `app/layout.tsx`, `app/page.tsx` |
+| **Decoration characters survive the sweep.** The rule that clears a session dead for 10 minutes used to take the decorative characters with it. | `server/index.mjs` |
+| **A real Claude session only speaks its own words** in the group chat — no generated line is put in its mouth. | `server/index.mjs`, `src/shared/chat-engine.js` |
+| **Chat checks the context before closing the editor**, and opens a new thread when the old one has gone stale. | `server/index.mjs` |
+| The music panel's collapse arrow is an SVG, not a text triangle — the character was too small for anyone to read as a button. | `src/components/office/NhacNen.tsx` |
 
 ## Quick start
 
@@ -28,11 +52,25 @@ You need Node.js 20.9 or newer and Claude Code, on macOS, Linux or Windows. The 
 servers, cleanup) reads each system its own way; opening a session's IDE window and quitting apps are macOS only.
 
 ```bash
-git clone https://github.com/khanh020905/my-office.git && cd my-office
+git clone https://github.com/VuVietAnh2309/3D_office_agents.git && cd 3D_office_agents
 npm install
 node bin/cli.mjs install --service   # adds the hooks to ~/.claude/settings.json and runs the office at login
 node bin/cli.mjs doctor              # checks Node, the server, every hook and the background service
 ```
+
+### Naming your own teams and sessions
+
+`ten-doi.json` (folder → team label) and `ten-phien.json` (session id or folder → session name) are plain
+`key → name` maps. The copies in this repo hold **examples only**. To use your own names, put them in
+`ten-doi.local.json` and `ten-phien.local.json` beside them:
+
+```json
+{ "my-project": "Team A", "/Users/you/code/my-project": "Assistant" }
+```
+
+The `.local.json` files are merged over the tracked ones key by key — so list only what you want to differ — and
+they are in `.gitignore`, so your folder names and session ids never leave your machine. The server reads both at
+startup; edit and restart, no rebuild needed.
 
 Then open <http://localhost:4310>.
 

@@ -1,27 +1,66 @@
-# My Office
+# 3D Office Agents
 
 [English](README.md) · Tiếng Việt
 
-![My Office: tầng công ty với các phiên đang làm việc](docs/media/demo.gif)
+![Tầng công ty với các phiên đang làm việc](docs/media/demo.gif)
 
 Văn phòng chibi 3D cho thấy các session Claude Code đang làm gì, kèm bảng "Máy Mac" để xem RAM, CPU, ổ đĩa và giải phóng.
 
-Mở: http://localhost:4310 · Xem thử không cần Claude Code: http://localhost:4310/?demo · Xem online, không cần cài: https://khanh020905.github.io/my-office/vi/
+> **Đây là bản dựng riêng từ [My Office](https://github.com/khanh020905/my-office) của
+> [khanh020905](https://github.com/khanh020905), dùng theo giấy phép MIT.** Văn phòng, bảng máy và mọi thứ mô tả
+> bên dưới là công sức của dự án đó. Bản này khác chỗ nào thì xem [Bản này khác gì](#bản-này-khác-gì). Muốn bản
+> gốc chưa chỉnh sửa thì vào thẳng dự án gốc.
 
-**Có câu hỏi hay ý tưởng?** Hỏi ở [Discussions → Q&A](https://github.com/khanh020905/my-office/discussions/categories/q-a), góp ý ở [Ideas](https://github.com/khanh020905/my-office/discussions/categories/ideas), hoặc khoe văn phòng của bạn ở [Show and tell](https://github.com/khanh020905/my-office/discussions/categories/show-and-tell).
+Mở: http://localhost:4310 · Xem thử không cần Claude Code: http://localhost:4310/?demo · Xem online, không cần cài:
+https://vuvietanh2309.github.io/3D_office_agents/vi/ (cần bật một lần Settings → Pages → Source: GitHub Actions).
+
+**Có câu hỏi hay ý tưởng?** Cộng đồng nằm ở dự án gốc: hỏi ở
+[Discussions → Q&A](https://github.com/khanh020905/my-office/discussions/categories/q-a), góp ý ở
+[Ideas](https://github.com/khanh020905/my-office/discussions/categories/ideas), hoặc khoe văn phòng của bạn ở
+[Show and tell](https://github.com/khanh020905/my-office/discussions/categories/show-and-tell). Lỗi chỉ có ở *bản
+này* thì báo tại đây, đừng báo lên dự án gốc.
 
 Chạy được trên macOS, Linux và Windows (bảng máy đọc từng hệ điều hành theo cách riêng; mở cửa sổ IDE và thoát app chỉ có trên macOS). Giao diện mặc định là tiếng Anh; đổi sang tiếng Việt trong **Cài đặt → Ngôn ngữ** (hoặc đặt `OFFICE_LANG=vi`).
 
 > My Office là dự án cộng đồng, không do Anthropic làm, bảo trợ hay liên kết.
 
+## Bản này khác gì
+
+Từ mục sau trở đi là nguyên văn dự án gốc. Đây là những chỗ đã đổi:
+
+| Đổi gì | Tệp |
+| --- | --- |
+| **Đội có tên riêng.** Nhãn trên thẻ phiên lấy từ `ten-doi.json` (`thư mục → nhãn`) thay vì tên thư mục. Nhãn là trường riêng chứ không suy ra từ git, nên thư mục không phải kho git cũng đặt tên được. | `ten-doi.json`, `server/index.mjs`, `src/office/ui/activity.js`, `src/office/net/live.js`, `src/office/people/{accountant,hr}.js` |
+| **Phiên có tên riêng.** `ten-phien.json` tra theo mã phiên trước, không có mới tra theo thư mục — nhờ vậy hai phiên trong cùng một thư mục không trùng tên. Tên đặt ở gốc bản ghi phiên, vì ô chọn người nhận đọc theo đường khác với chat. | `ten-phien.json`, `server/index.mjs` |
+| **Nhân vật Director đổi tên thành `AnhVu - Leader`**, con mèo văn phòng tên `TuanKiet`, cả hai ngôn ngữ. | `src/i18n/locales/{en,vi}/` |
+| **Nút nhạc nền**: nhúng trình phát YouTube chính thức, phát lặp. Nằm ở hàng điều khiển trên đỉnh và dùng khuôn pop của chính app, chứ không che danh sách phiên và không tự mở bảng. | `src/components/office/NhacNen.tsx`, `src/components/office/TopBar.tsx`, `src/styles/nhac.css`, `app/layout.tsx`, `app/page.tsx` |
+| **Nhân vật trang trí không bị dọn.** Luật xoá phiên chết 10 phút trước đây dọn luôn cả nhân vật trang trí. | `server/index.mjs` |
+| **Phiên Claude thật chỉ nói bằng chữ của chính nó** trong chat nhóm — không gán lời tự sinh cho nó. | `server/index.mjs`, `src/shared/chat-engine.js` |
+| **Chat kiểm ngữ cảnh trước khi đóng editor**, và mở mạch mới khi mạch cũ đã cũ. | `server/index.mjs` |
+| Mũi tên thu gọn bảng nhạc chuyển sang SVG, vì ký tự tam giác quá nhỏ, không ai nhận ra bấm được. | `src/components/office/NhacNen.tsx` |
+
 ## Cài
 
 ```bash
-git clone https://github.com/khanh020905/my-office.git && cd my-office
+git clone https://github.com/VuVietAnh2309/3D_office_agents.git && cd 3D_office_agents
 npm install
 node bin/cli.mjs install --service   # thêm hook vào ~/.claude/settings.json + chạy nền khi đăng nhập
 node bin/cli.mjs doctor              # kiểm tra Node, curl, server, đủ hook, dịch vụ nền
 ```
+
+### Đặt tên đội và tên phiên của bạn
+
+`ten-doi.json` (thư mục → nhãn đội) và `ten-phien.json` (mã phiên hoặc thư mục → tên phiên) chỉ là bảng
+`khoá → tên`. Bản nằm trong kho này chỉ là **ví dụ**. Muốn dùng tên của mình thì ghi vào
+`ten-doi.local.json` và `ten-phien.local.json` đặt cạnh đó:
+
+```json
+{ "my-project": "Team A", "/Users/you/code/my-project": "Assistant" }
+```
+
+Hai tệp `.local.json` được gộp đè lên tệp đi kèm kho theo từng khoá — chỉ cần ghi những mục muốn khác — và nằm
+trong `.gitignore`, nên tên thư mục cùng mã phiên của bạn không bao giờ rời khỏi máy. Máy chủ đọc cả hai lúc khởi
+động; sửa xong khởi động lại là được, không phải build lại.
 
 `install` sao lưu `settings.json` trước khi sửa và chỉ thêm hook của My Office (chạy lại không thêm trùng). Gỡ: `node bin/cli.mjs uninstall`.
 
