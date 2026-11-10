@@ -64,7 +64,7 @@ Things to know before changing the 3D:
   give the material `polygonOffset`.
 * **First-person collisions** come from the bounding boxes of meshes at start (`interact/first-person.js`). A merged
   mesh spread across the floor must be `userData.noCollide` and give its footprints instead (`floorBlocks`).
-* **Frame budget**: 60 fps while something moves or you interact, 40 when calm, 10 in the background, 5 without a GPU
+* **Frame budget**: 60 fps while something moves or you interact, 40 when calm, the same whether the window has focus or not (a hidden tab or a covered window is paused by the browser), 5 without a GPU
   (`core/loop.js`); on Retina screens the resolution steps down when frames come late.
 
 ## Languages (`src/i18n/`)
